@@ -19,28 +19,26 @@ log = logging.getLogger(__name__)
 
 
 @pluginmatcher(re.compile(
-    r"https?://w3\.mp\.lura\.live/player/prod/v3/anvload\.html\?(?:(?P<params>.+))?"
+
 ))
 class Lura(Plugin):
 
     def _get_streams(self):
-        data = self.match.groupdict()
-        params = parse_params(data.get("params"))
-        log.debug(f"params={params}")
-        if "key" not in params:
-            log.error("The Lura url does not have a key")
-            return
+        getResult = self.session.http.get(
+            self.url,
+            allow_redirects=True,
+            schema=validate.Schema(
+                validate.transform(re.compile(r"""<script>window.loadAnvato\((?P<json>{.*})\);</script>""").search),
+                validate.transform(lambda v: v.group(1)),
+                validate.parse_json(),
+                {
+                    "video": str,
+                    "accessKey": str
+                },
+            ),
+        )
 
-        key_b64 = urllib.parse.unquote(params["key"])
-        key_bytes = base64.b64decode(key_b64)
-        key_str = key_bytes.decode("utf-8")
-        key_json = json.loads(key_str)
-
-        if "anvack" not in key_json or "v" not in key_json:
-            log.error("The Lura url does not have the expected data encoded")
-            return
-
-        url = f"https://tkx.mp.lura.live/rest/v2/mcp/video/{key_json['v']}?anvack={key_json['anvack']}"
+        url = f"https://tkx.mp.lura.live/rest/v2/mcp/video/{getResult['video']}?anvack={getResult['accessKey']}"
         postResult = self.session.http.post(
             url
         )
