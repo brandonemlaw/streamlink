@@ -1,4 +1,4 @@
-from streamlink.plugins.lura import Lura
+from streamlink.plugins.anvato import Lura
 from tests.plugins import PluginCanHandleUrl
 
 

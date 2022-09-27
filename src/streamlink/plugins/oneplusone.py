@@ -29,7 +29,9 @@ class OnePlusOneHLS(HLSStream):
         first_parsed = urlparse(self._url)
         self._first_netloc = first_parsed.netloc
         self._first_path_chunklist = first_parsed.path.split("/")[-1]
-        self.watch_timeout = int(first_parsed.path.split("/")[2]) - 15
+        #self.watch_timeout = int(first_parsed.path.split("/")[2]) - 15
+        self.watch_timeout = int(time()) + 20
+        log.debug(f"timeout: {first_parsed.path.split('/')[2]}")
         self.api = OnePlusOneAPI(session_, self_url)
 
     def _next_watch_timeout(self):
@@ -48,6 +50,8 @@ class OnePlusOneHLS(HLSStream):
             if not _hls_url:
                 self.watch_timeout += 10
                 return self._url
+            log.debug(f"orig-url: {_hls_url}")
+            log.debug(f"raw-url: {_hls_url}")
             parsed = urlparse(_hls_url)
             path_parts = parsed.path.split("/")
             path_parts[-1] = self._first_path_chunklist
@@ -58,6 +62,8 @@ class OnePlusOneHLS(HLSStream):
                 netloc=self._first_netloc,
                 path="/".join([p for p in path_parts])
             ).geturl()
+            log.debug(f"new-url: {self._url}")
+
         return self._url
 
 
