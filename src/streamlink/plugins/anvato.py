@@ -109,7 +109,6 @@ class AnvatoApi:
                 ),
             )
             self.api_url = f"https://tkx.mp.lura.live/rest/v2/mcp/video/{getResult['video']}?anvack={getResult['accessKey']}"
-        print(self.api_url)
         return self.api_url
 
 
