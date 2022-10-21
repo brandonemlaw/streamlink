@@ -29,7 +29,7 @@ class AnvatoHLSStream(HLSStream):
         super().__init__(session_, url, None, **args)
         self._page_url = page_url
         self._q = q
-        self._watch_increment = 30 #30 seconds
+        self._watch_increment = 7200 #2 hours
 
         self.watch_timeout = int(time()) + self._watch_increment 
         self.api = AnvatoApi(session_, page_url)
@@ -71,8 +71,7 @@ class AnvatoHLSStream(HLSStream):
             ts = urllib.parse.parse_qs(parsed.query)['ts'][0]
             
             log.debug(f"Replacing: {self._url}")
-            self._url = parsed._replace(
-                query = parsed.query.replace(f"ts={ts}", f"ts={original_ts}")).geturl()
+            self._url = parsed.geturl()
             log.debug(f"with: {self._url}")
         return self._url
     
