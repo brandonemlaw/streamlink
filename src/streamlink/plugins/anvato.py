@@ -166,7 +166,7 @@ class Anvato(Plugin):
         if not url_hls:
             return
         for q, s in HLSStream.parse_variant_playlist(self.session, url_hls).items():
-            yield q, AnvatoHLSStream(self.session, s.url, page_url=self.url, q=q)
+            yield q, AnvatoHLSStream(self.session, s.url, page_url=self.url, q=q, force_restart=True)
 
 
 
